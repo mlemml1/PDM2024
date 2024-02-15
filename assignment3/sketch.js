@@ -31,7 +31,7 @@ class SpelunkyGuy {
   constructor(x, y, sheet) {
     this.sprite = new Sprite(x, y, 80, 80);
     this.sprite.spriteSheet = sheet;
-    this.sprite.anis.frameDelay = 8;
+    this.sprite.anis.frameDelay = 4;
 
     this.sprite.addAnis({
       stand: {row: 0, frames: 1},
@@ -86,14 +86,14 @@ class SpelunkyGuy {
 
   walkLeft() {
     this.sprite.changeAni('walkRight');
-    this.sprite.vel.x = -1;
+    this.sprite.vel.x = -2;
     this.sprite.vel.y = 0;
     this.sprite.scale.x = -1;
   }
 
   walkRight() {
     this.sprite.changeAni('walkRight');
-    this.sprite.vel.x = 1;
+    this.sprite.vel.x = 2;
     this.sprite.vel.y = 0;
     this.sprite.scale.x = 1;
   }
@@ -101,14 +101,14 @@ class SpelunkyGuy {
   walkUp() {
     this.sprite.changeAni('walkUp');
     this.sprite.vel.x = 0;
-    this.sprite.vel.y = -1;
+    this.sprite.vel.y = -2;
     // this.sprite.scale.x = 1;
   }
 
   walkDown() {
     this.sprite.changeAni('walkDown');
     this.sprite.vel.x = 0;
-    this.sprite.vel.y = 1;
+    this.sprite.vel.y = 2;
     // this.sprite.scale.x = 1;
   }
 
