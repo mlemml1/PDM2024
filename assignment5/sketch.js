@@ -72,6 +72,8 @@ function draw() {
   fill('black');
   textSize(18);
   text("Reverb", 70, 363);
+
+  text('Press the buttons to play sound effects!', 180, 16);
 }
 
 function mousePressed() {
