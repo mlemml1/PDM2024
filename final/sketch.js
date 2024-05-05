@@ -141,33 +141,44 @@ function gameThink(dt) {
   // Process input.
   if (rotateLeft)
   {
-    if (rotatePieceLeft())
+    if (rotatePieceLeft()) {
+      sfxMove();
       timeSinceLastMove = 0;
+    }
   }
   else if (rotateRight)
   {
-    if (rotatePieceRight())
+    if (rotatePieceRight()) {
+      sfxMove();
       timeSinceLastMove = 0;
+    }
   }
   else if (moveLeft)
   {
-    if (movePieceLeft())
+    if (movePieceLeft()) {
+      sfxMove();
       timeSinceLastMove = 0;
+    }
   }
   else if (moveRight)
   {
-    if (movePieceRight())
+    if (movePieceRight()) {
+      sfxMove();
       timeSinceLastMove = 0;
+    }
   }
   else if (moveDown)
   {
-    if (movePieceDown())
+    if (movePieceDown()) {
+      sfxMove();
       timeSinceLastMove = 0;
+    }
   }
   else if (drop)
   {
     // Drop it and attach it.
     dropPiece();
+    sfxDrop();
     attachPiece();
     chooseNewPiece();
 
@@ -246,7 +257,10 @@ function scoreThink() {
     }
   }
 
-  score += numCollapsed * 100;
+  if (numCollapsed) {
+    sfxLineClear();
+    score += numCollapsed * 10;
+  }
 }
 
 function chooseNewPiece() {
@@ -273,7 +287,7 @@ function chooseNewPiece() {
 
 function incrementLevel() {
   level++;
-  nextLevelScore += 2000;
+  nextLevelScore += 200;
 
   
   if (fallSpeed > 0.25)
@@ -313,7 +327,7 @@ function startGame() {
 
   score = 0;
   level = 1;
-  nextLevelScore = 1500;
+  nextLevelScore = 150;
   running = true;
 
   // console.log(`start game`);
