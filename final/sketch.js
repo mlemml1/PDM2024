@@ -120,6 +120,8 @@ function gameLoop() {
 function gameOver() {
   console.log("Game over!");
   running = false;
+
+  stopBgMusic();
 }
 
 function soundThink(dt) {
@@ -332,6 +334,8 @@ function startGame() {
 
   // console.log(`start game`);
   chooseNewPiece();
+
+  startBgMusic();
 }
 
 // let font;
