@@ -98,6 +98,12 @@ function keyPressed() {
   }
 }
 
+function mousePressed() {
+  if (!running) {
+    startGame();
+  }
+}
+
 function gameLoop() {
   if (!running)
     return;
@@ -282,6 +288,7 @@ function incrementLevel() {
 
 
 function startGame() {
+  console.log("Starting game...");
   cellGrid = Array.from({length: NUM_ROWS * NUM_COLS}, (val, index) => 0);
   resetKeyState();
 
@@ -348,7 +355,7 @@ function draw() {
   const margin = 16;
 
   if (running) {
-
+    
     // Game details.
     fill('white');
     textSize(30);
@@ -395,5 +402,16 @@ function draw() {
       y_offset += piece.height * cellSize + 16;
     }
   }
-
+  else {
+    // Game over!
+    fill('white');
+    textSize(40);
+    textFont('Poppins');
+    
+    text(`Game Over!`, 350, 90);
+    text(`Your Score: ${score}`, 350, 200);
+    text(`Click to restart.`, 350, 300);
+  }
 }
+
+
