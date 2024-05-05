@@ -1,6 +1,13 @@
 // Code adapted from:
 // https://github.com/rmorenojr/ElegooTutorial/blob/master/Lesson%2028%20-%204%20Digit%207%20Segment%20Display/Four_Digit_HexCounter/Four_Digit_HexCounter.ino
 
+#define VRX_PIN A0
+#define VRY_PIN A1
+#define SW_PIN 8
+#define SW2_PIN 2
+int joyX = 0, joyY = 0, sw = 0;
+
+
 const int dataPin  = 12;  // 74HC595 pin 8 DS
 const int latchPin = 11;  // 74HC595 pin 9 STCP
 const int clockPin = 9;   // 74HC595 pin 10 SHCP
@@ -62,6 +69,9 @@ void setup() {
       pinMode(controlDigits[x],OUTPUT);
       digitalWrite(controlDigits[x],LOW);  // Turns off the digit  
   }
+
+  pinMode(SW_PIN, INPUT_PULLUP);
+  pinMode(SW2_PIN, INPUT);
 }
 
 void DisplaySegments(){
@@ -154,6 +164,9 @@ void RawDisplay(){
 }
 
 unsigned int score = 0;
+unsigned long lastTime = 0;
+const int interval = 50;
+
 void loop() {
 
     DisplaySegments();                                      // Caution: Avoid extra delays
@@ -184,6 +197,22 @@ void loop() {
         displayDigits[i] = c - '0';
     }
 
+    int sw = digitalRead(SW_PIN);
+    int sw2 = digitalRead(SW2_PIN);
+    int vrx = analogRead(VRX_PIN);
+    int vry = analogRead(VRY_PIN);
+
+    unsigned long now = millis();
+    if (now - lastTime > interval) {
+      lastTime = now;
+
+      const int bufLen = 100;
+      static char outbuf[bufLen];
+      snprintf(outbuf, bufLen, "%d,%d,%d,%d\n", vrx, vry, !sw, !!sw2);
+      Serial.print(outbuf);
+    }
+
+    
     // unsigned long nowValue = millis() - onTime;
     // if (nowValue >= long(digitDelay)){
     //     onTime = millis();

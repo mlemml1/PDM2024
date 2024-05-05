@@ -382,6 +382,102 @@ function updateScoreDisplay() {
     port.write(`${score}\n`);
   }
 }
+
+let prevJoyState = [false, false, false, false];
+let prevSwitchState = [false, false];
+let leftTime = 0;
+let rightTime = 0;
+let downTime = 0;
+let gameTime = 0;
+
+function updateController() {
+  gameTime += deltaTime / 1000.0;
+
+  let str = port.readUntil("\n");
+  let values = str.split(",");
+
+  const tolerance = 256;
+  const debounceTime = 0.2;
+
+  if (values.length >= 4) {
+    let joyX = parseFloat(values[0]);
+    let joyY = parseFloat(values[1]);
+    let sw = parseInt(values[2]);
+    let sw2 = parseInt(values[3]);
+    // console.log(`${joyX},${joyY},${sw},${sw2}`);
+
+    let joyState = [false, false, false, false];
+    let switchState = [sw, sw2];
+    if (!isNaN(joyX) && joyX < 512 - tolerance)
+      joyState[0] = true;
+    if (!isNaN(joyX) && joyX > 512 + tolerance)
+      joyState[1] = true;
+    if (!isNaN(joyY) && joyY < 512 - tolerance)
+      joyState[3] = true;
+    if (!isNaN(joyY) && joyY > 512 + tolerance)
+      joyState[2] = true;
+
+    // Debounce movement.
+    if (joyState[0]) {
+      // Initial move.
+      if (!leftTime) {
+        moveLeft = true;
+        leftTime = gameTime;
+      }
+
+      // Fast move.
+      if ((gameTime - leftTime) > debounceTime)
+        moveLeft = true;
+    }
+    else {
+      leftTime = 0;
+    }
+
+    if (joyState[1]) {
+      // Initial move.
+      if (!rightTime) {
+        moveRight = true;
+        rightTime = gameTime;
+      }
+
+      // Fast move.
+      if ((gameTime - rightTime) > debounceTime)
+        moveRight = true;
+    }
+    else {
+      rightTime = 0;
+    }
+
+    if (joyState[2]) {
+      // Initial move.
+      if (!downTime) {
+        moveDown = true;
+        downTime = gameTime;
+      }
+
+      // Fast move.
+      if ((gameTime - downTime) > debounceTime)
+        moveDown = true;
+    }
+    else {
+      downTime = 0;
+    }
+
+    if (joyState[3] && !prevJoyState[3])
+      rotateRight = true;
+
+    if (switchState[0] && !prevSwitchState[0])
+      drop = true;
+
+    if (switchState[1] && !prevSwitchState[1])
+      hold = true;
+
+
+    prevJoyState = joyState;
+    prevSwitchState = switchState;
+  }
+}
+
 function draw() {
   // Update game logic each frame.
   gameLoop();
@@ -442,6 +538,10 @@ function draw() {
   }
 
   updateScoreDisplay();
+
+  // Update the controller.
+  updateController();
+
 }
 
 
