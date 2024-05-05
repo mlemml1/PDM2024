@@ -19,3 +19,28 @@ body {
 canvas {
   display: block;
 }
+
+.leaderboard {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  bottom: 1rem;
+  background-color: #222;
+  padding: 2rem;
+  width: 16rem;
+  font-family: Poppins;
+  color: #eee;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  text-align: center;
+}
+
+.entries {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}

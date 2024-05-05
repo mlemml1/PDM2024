@@ -1,5 +1,7 @@
 
 let running = false;
+let port;
+let connectButton;
 
 let fallSpeed = 0;
 let fallTime = 0;
@@ -319,34 +321,67 @@ function startGame() {
 }
 
 // let font;
+let t_block;
 
 function preload() {
   // font = loadFont('assets/inconsolata.otf');
+  t_block = loadImage('assets/block.png');
 }
 
 function setup() {
   createCanvas(700, 1000);
 
+  port = createSerial();
+  connectButton = createButton("connect");
+  connectButton.mousePressed(connect);
+
   startGame();
 }
 
-function drawBlock(block, x, y) {
+function connect() {
+  if (!port.opened()) {
+    port.open('Arduino', 9600);
+  }
+  else {
+    port.close();
+  }
+}
+
+function drawCell(cellColor, x, y, size) {
+  // Separate out RGB.
+  let r = (cellColor >> 16) & 0xFF;
+  let g = (cellColor >> 8) & 0xFF;
+  let b = (cellColor >> 0) & 0xFF;
+
+  if (cellColor) {
+    tint(r, g, b);
+    image(t_block, x, y, size, size);
+  }
+  else {
+    fill(r, g, b);
+    stroke(cellColor ? 0 : 40);
+    // fill(cellColor ? 'white' : 'black');
+    square(x, y, size);
+  }
+}
+
+function drawBlockGrid(block, x, y) {
   for (let row = 0; row < block.height; row++) {
     for (let col = 0; col < block.width; col++) {
       let cellColor = block.Get(col, row) ? block.color : 0;
 
-      // Separate out RGB.
-      let r = (cellColor >> 16) & 0xFF;
-      let g = (cellColor >> 8) & 0xFF;
-      let b = (cellColor >> 0) & 0xFF;
-      fill(r, g, b);
-      stroke(cellColor ? 0 : 40);
-      // fill(cellColor ? 'white' : 'black');
-      square(x + col * cellSize, y + row * cellSize, cellSize);
+      drawCell(cellColor, x + col * cellSize, y + row * cellSize, cellSize);
     }
   }
 }
 
+let prevScore = 0;
+function updateScoreDisplay() {
+  if (score != prevScore && port.opened()) {
+    prevScore = score;
+    port.write(`${score}\n`);
+  }
+}
 function draw() {
   // Update game logic each frame.
   gameLoop();
@@ -355,7 +390,7 @@ function draw() {
   const margin = 16;
 
   if (running) {
-    
+
     // Game details.
     fill('white');
     textSize(30);
@@ -371,7 +406,7 @@ function draw() {
     if (heldPiece != -1) {
       let piece = getPiece(heldPiece, 0);
       let piece_x = x_center - (piece.width * cellSize) * 0.5;
-      drawBlock(piece, piece_x, y_offset);
+      drawBlockGrid(piece, piece_x, y_offset);
     }
     x_offset += cellSize * 4 + margin;
 
@@ -380,14 +415,7 @@ function draw() {
       for (col = 0; col < NUM_COLS; col++) {
         let cellColor = getCell(col, row);
   
-        // Separate out RGB.
-        let r = (cellColor >> 16) & 0xFF;
-        let g = (cellColor >> 8) & 0xFF;
-        let b = (cellColor >> 0) & 0xFF;
-        fill(r, g, b);
-        stroke(cellColor ? 0 : 40);
-        // fill(cellColor ? 'white' : 'black');
-        square(x_offset + col * cellSize, y_offset + row * cellSize, cellSize);
+        drawCell(cellColor, x_offset + col * cellSize, y_offset + row * cellSize, cellSize);
       }
     }
     x_offset += NUM_COLS * cellSize;
@@ -398,7 +426,7 @@ function draw() {
     for (let i = 0; i < NUM_QUEUED; i++) {
       let piece = getPiece(queuedPieces[i], 0);
       let piece_x = x_center - (piece.width * cellSize) * 0.5;
-      drawBlock(piece, piece_x, y_offset);
+      drawBlockGrid(piece, piece_x, y_offset);
       y_offset += piece.height * cellSize + 16;
     }
   }
@@ -412,6 +440,8 @@ function draw() {
     text(`Your Score: ${score}`, 350, 200);
     text(`Click to restart.`, 350, 300);
   }
+
+  updateScoreDisplay();
 }
 
 
