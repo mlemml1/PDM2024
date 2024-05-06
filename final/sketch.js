@@ -363,6 +363,8 @@ function connect() {
   else {
     port.close();
   }
+
+  Tone.start();
 }
 
 function drawCell(cellColor, x, y, size) {
